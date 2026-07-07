@@ -1,8 +1,9 @@
 # WildLinks Flutter SDK
 
 Flutter SDK for the WildLinks smart link platform: resolves Universal Links / App
-Links when your app is already installed, and recovers deferred deep link intent
-on first launch after a fresh install.
+Links when your app is already installed, supports app-specific prefixed links like
+`/x4I9/slug`, and recovers deferred deep link intent on first launch after a fresh
+install.
 
 ## Install
 
@@ -31,6 +32,10 @@ flutter pub get
 Both of those dashboard entries are what make `/.well-known/apple-app-site-association`
 and `/.well-known/assetlinks.json` serve correctly for your domain — the OS checks
 those files to decide whether to hand your app the link at all.
+
+If your org uses multiple apps on the same branded domain, WildLinks can generate
+prefixed links such as `https://link.valueshift.in/x4I9/launch-offer`. The Flutter
+SDK handles those automatically; you do not need to parse the prefix yourself.
 
 ## Quick start
 
@@ -128,6 +133,7 @@ Future<void> createAndShareLink() async {
   final link = await WildlinksSdk.createDeepLink(
     defaultUrl: 'https://yourwebsite.com/promo',
     title: 'Spring sale',
+    appProfileId: 'app_profile_123',
     deepLinkPayload: {'screen': 'offer', 'offerId': 'spring24'},
   );
 
@@ -135,3 +141,7 @@ Future<void> createAndShareLink() async {
   // Share link.shortUrl using your platform's share UI.
 }
 ```
+
+Use `appProfileId` when the link should belong to a specific app profile in the
+dashboard. That app profile controls branding, mobile platform settings, and the
+optional per-app path prefix used in the generated short URL.

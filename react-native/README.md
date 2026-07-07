@@ -8,6 +8,10 @@ Handles two paths a smart link tap can take once your app exists:
    app for the first time. This SDK checks whether that install came from a smart
    link tap (clipboard-based deferred matching) and gets back the original intent.
 
+It also supports app-specific prefixed URLs such as
+`https://link.valueshift.in/x4I9/launch-offer` when multiple apps share one branded
+domain.
+
 ## Install
 
 ```bash
@@ -63,15 +67,17 @@ import { createWildlink } from '@wilderbots/wildlinks-react-native';
 const link = await createWildlink({
   defaultUrl: 'https://example.com/promo',
   title: 'Launch Offer',
+  appProfileId: 'app_profile_123',
   deepLinkPayload: { screen: 'offer', offerId: 'spring24' },
 });
 
 console.log(link.shortUrl);
-// https://go.wilderbots.com/launch-offer
+// https://go.wilderbots.com/x4I9/launch-offer
 ```
 
 Use `createLink` for the full created link object, `createShortLink` to return only
-`shortUrl`, or `createWildlink` as a convenience wrapper.
+`shortUrl`, or `createWildlink` as a convenience wrapper. Pass `appProfileId` when
+the link should be generated for a specific app profile from the WildLinks dashboard.
 
 Or call the lower-level functions directly if you're not using the hook:
 
@@ -80,6 +86,12 @@ import { handleWildlinksUrl, checkWildlinksInstall } from '@wilderbots/wildlinks
 
 const result = await handleWildlinksUrl('https://go.wilderbots.com/diwali-sale');
 // { matched: true, destinationUrl: '...', deepLinkPayload: {...} }
+```
+
+That lower-level helper also works with prefixed URLs:
+
+```ts
+const result = await handleWildlinksUrl('https://go.wilderbots.com/x4I9/diwali-sale');
 ```
 
 ## Improving deferred-match accuracy on Android

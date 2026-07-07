@@ -72,6 +72,7 @@ class WildlinksSdk {
     }
 
     final slug = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : '';
+    final pathPrefix = uri.pathSegments.length > 1 ? '/${uri.pathSegments.take(uri.pathSegments.length - 1).join('/')}/' : null;
     if (slug.isEmpty) {
       return ResolvedLink.notMatched('No slug in URI');
     }
@@ -79,6 +80,7 @@ class WildlinksSdk {
     final query = {
       'domain': uri.host,
       'slug': slug,
+      if (pathPrefix != null) 'pathPrefix': pathPrefix,
       'platform': _platformName(),
       if (uri.queryParameters['pw'] != null) 'password': uri.queryParameters['pw']!,
     };
@@ -147,6 +149,7 @@ class WildlinksSdk {
   static Future<LinkModel> createLink({
     required String defaultUrl,
     String? domainId,
+    String? appProfileId,
     String? slug,
     String? title,
     Map<String, dynamic>? deepLinkPayload,
@@ -165,6 +168,7 @@ class WildlinksSdk {
     final body = {
       'defaultUrl': defaultUrl,
       if (domainId != null) 'domainId': domainId,
+      if (appProfileId != null) 'appProfileId': appProfileId,
       if (slug != null) 'slug': slug,
       if (title != null) 'title': title,
       if (deepLinkPayload != null) 'deepLinkPayload': deepLinkPayload,
@@ -193,8 +197,8 @@ class WildlinksSdk {
   }
 
   /// Create a smart deep link and return the generated short URL.
-  static Future<String> createShortLink(String defaultUrl, {String? domainId, String? slug}) async {
-    final result = await createLink(defaultUrl: defaultUrl, domainId: domainId, slug: slug);
+  static Future<String> createShortLink(String defaultUrl, {String? domainId, String? appProfileId, String? slug}) async {
+    final result = await createLink(defaultUrl: defaultUrl, domainId: domainId, appProfileId: appProfileId, slug: slug);
     return result.shortUrl;
   }
 
@@ -203,6 +207,7 @@ class WildlinksSdk {
   static Future<LinkModel> createDeepLink({
     required String defaultUrl,
     String? domainId,
+    String? appProfileId,
     String? slug,
     String? title,
     Map<String, dynamic>? deepLinkPayload,
@@ -210,6 +215,7 @@ class WildlinksSdk {
     return createLink(
       defaultUrl: defaultUrl,
       domainId: domainId,
+      appProfileId: appProfileId,
       slug: slug,
       title: title,
       deepLinkPayload: deepLinkPayload,

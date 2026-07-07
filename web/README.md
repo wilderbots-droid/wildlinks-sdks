@@ -8,6 +8,11 @@ Two things live in this package:
 2. **`checkDeferredMatch` / `resolveLink`** — browser-safe helpers with no secrets,
    safe to bundle into a client-side app.
 
+The SDK also understands both public link shapes:
+
+- `https://yourdomain.com/slug`
+- `https://yourdomain.com/x4I9/slug`
+
 ## Install
 
 ```bash
@@ -26,12 +31,16 @@ const wildlinks = new WildlinksClient({
 
 const link = await wildlinks.createLink({
   defaultUrl: 'https://clientbrand.com/diwali-sale',
+  appProfileId: 'app_profile_123',
   deepLinkPayload: { screen: 'offer', offerId: 'diwali24' },
   utm: { source: 'newsletter', medium: 'email', campaign: 'diwali24' },
 });
 
-console.log(link.shortUrl); // https://go.wilderbots.com/diwali-sale
+console.log(link.shortUrl); // https://go.wilderbots.com/x4I9/diwali-sale
 ```
+
+Pass `appProfileId` when the link should use a specific app profile's branding,
+mobile settings, and optional per-app path prefix.
 
 If you need to create smart links from a browser-based app, do so through your
 own backend or serverless API route so the API key stays secret. For example,

@@ -20,6 +20,7 @@ export interface RoutingRuleInput {
 
 export interface CreateLinkInput {
   domainId?: string;
+  appProfileId?: string;
   slug?: string;
   title?: string;
   defaultUrl: string;
@@ -132,11 +133,14 @@ export async function handleIncomingUrl(url: string): Promise<ResolvedLink> {
     return { matched: false };
   }
 
-  const slug = parsed.pathname.replace(/^\//, '');
+  const segments = parsed.pathname.split('/').filter(Boolean);
+  const slug = segments.length ? segments[segments.length - 1] : '';
   if (!slug) return { matched: false, error: 'No slug in URL' };
+  const pathPrefix = segments.length > 1 ? `/${segments.slice(0, -1).join('/')}/` : null;
 
   const platform = getPlatform();
   const query = new URLSearchParams({ domain: parsed.hostname, slug, platform });
+  if (pathPrefix) query.set('pathPrefix', pathPrefix);
   const password = parsed.searchParams.get('pw');
   if (password) query.set('password', password);
 
@@ -200,7 +204,7 @@ export async function createLink(input: CreateLinkInput): Promise<LinkResponse> 
   return apiRequest<LinkResponse>('/api/v1/links', input);
 }
 
-export async function createShortLink(input: { defaultUrl: string; domainId?: string; slug?: string }): Promise<string> {
+export async function createShortLink(input: { defaultUrl: string; domainId?: string; appProfileId?: string; slug?: string }): Promise<string> {
   const link = await createLink(input);
   return link.shortUrl;
 }
