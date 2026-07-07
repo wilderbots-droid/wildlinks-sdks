@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Clean up the public README for pub.dev.
+- Update package documentation to use the published `wildlinks_flutter_sdk` dependency.
+
 ## 1.0.0
 
 - Initial release.
