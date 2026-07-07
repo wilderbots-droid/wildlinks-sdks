@@ -1,0 +1,29 @@
+{
+  "name": "@deeplink/react-native-sdk",
+  "version": "1.0.0",
+  "description": "React Native SDK for the Deeplink smart link platform - Universal Link/App Link handling + deferred deep link matching",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --external react --external react-native",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch --external react --external react-native"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-native": ">=0.70"
+  },
+  "peerDependenciesOptional": {
+    "@react-native-clipboard/clipboard": ">=1.10"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "react": "^18.3.1",
+    "react-native": "^0.75.0",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
+  },
+  "keywords": ["deep-linking", "smart-links", "react-native", "universal-links", "app-links"],
+  "license": "MIT"
+}

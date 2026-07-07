@@ -1,0 +1,30 @@
+name: deeplink_flutter_sdk
+description: >
+  Flutter SDK for the Deeplink smart link platform - Universal Link / App Link
+  resolution and deferred deep link matching for apps built with Flutter.
+version: 1.0.0
+homepage: https://github.com/YOUR_GITHUB_USERNAME/deeplink-flutter-sdk
+repository: https://github.com/YOUR_GITHUB_USERNAME/deeplink-flutter-sdk
+issue_tracker: https://github.com/YOUR_GITHUB_USERNAME/deeplink-flutter-sdk/issues
+topics:
+  - deep-linking
+  - universal-links
+  - app-links
+  - url-shortener
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  app_links: ^6.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:

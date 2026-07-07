@@ -1,0 +1,20 @@
+{
+  "name": "@deeplink/sdk",
+  "version": "1.0.0",
+  "description": "Web SDK for the Deeplink smart link platform - server-side link management + browser-side deferred deep link matching",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+  },
+  "devDependencies": {
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {},
+  "keywords": ["deep-linking", "smart-links", "url-shortener"],
+  "license": "MIT"
+}
