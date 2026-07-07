@@ -1,11 +1,13 @@
 {
   "name": "@wilderbots/wildlinks-react-native",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React Native SDK for the WildLinks smart link platform - Universal Link/App Link handling and deferred deep link matching",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "homepage": "https://wildlinks.wilderbots.com/docs",
   "repository": {
     "type": "git",
@@ -33,7 +35,13 @@
     "tsup": "^8.2.4",
     "typescript": "^5.5.4"
   },
-  "keywords": ["deep-linking", "smart-links", "react-native", "universal-links", "app-links"],
+  "keywords": [
+    "deep-linking",
+    "smart-links",
+    "react-native",
+    "universal-links",
+    "app-links"
+  ],
   "license": "MIT",
   "publishConfig": {
     "access": "public"

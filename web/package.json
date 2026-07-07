@@ -1,11 +1,13 @@
 {
   "name": "@wilderbots/wildlinks-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Web SDK for the WildLinks smart link platform - server-side link management and browser-side deferred deep link matching",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "homepage": "https://wildlinks.wilderbots.com/docs",
   "repository": {
     "type": "git",
@@ -24,7 +26,11 @@
     "typescript": "^5.5.4"
   },
   "peerDependencies": {},
-  "keywords": ["deep-linking", "smart-links", "url-shortener"],
+  "keywords": [
+    "deep-linking",
+    "smart-links",
+    "url-shortener"
+  ],
   "license": "MIT",
   "publishConfig": {
     "access": "public"

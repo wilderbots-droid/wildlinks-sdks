@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4
+
+- Support app-specific prefixed links such as `/x4I9/slug`.
+- Add `appProfileId` to link-creation examples and package docs.
+
 ## 1.0.3
 
 - Clarify the README examples for links with and without `deepLinkPayload`.
