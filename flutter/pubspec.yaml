@@ -1,11 +1,11 @@
 name: deeplink_flutter_sdk
 description: >
-  Flutter SDK for the Deeplink smart link platform - Universal Link / App Link
+  Flutter SDK for the WildLinks smart link platform - Universal Link / App Link
   resolution and deferred deep link matching for apps built with Flutter.
 version: 1.0.0
-homepage: https://github.com/YOUR_GITHUB_USERNAME/deeplink-flutter-sdk
-repository: https://github.com/YOUR_GITHUB_USERNAME/deeplink-flutter-sdk
-issue_tracker: https://github.com/YOUR_GITHUB_USERNAME/deeplink-flutter-sdk/issues
+homepage: https://wildlinks.wilderbots.com/docs
+repository: https://github.com/wilderbots-droid/wildlinks-sdks
+issue_tracker: https://github.com/wilderbots-droid/wildlinks-sdks/issues
 topics:
   - deep-linking
   - universal-links

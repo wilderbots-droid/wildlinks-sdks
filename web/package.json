@@ -1,11 +1,20 @@
 {
-  "name": "@deeplink/sdk",
+  "name": "@wilderbots/deeplink-sdk",
   "version": "1.0.0",
-  "description": "Web SDK for the Deeplink smart link platform - server-side link management + browser-side deferred deep link matching",
+  "description": "Web SDK for the WildLinks smart link platform - server-side link management and browser-side deferred deep link matching",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": ["dist"],
+  "homepage": "https://wildlinks.wilderbots.com/docs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wilderbots-droid/wildlinks-sdks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wilderbots-droid/wildlinks-sdks/issues"
+  },
+  "author": "Wilderbots <wilderbots@gmail.com>",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
@@ -16,5 +25,8 @@
   },
   "peerDependencies": {},
   "keywords": ["deep-linking", "smart-links", "url-shortener"],
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -4,8 +4,8 @@ Three packages, one platform. Pick what matches your stack:
 
 | Package | For | Verified |
 |---|---|---|
-| `web/` — `@deeplink/sdk` | Node/Next.js backends, browser-side web apps | ✅ tsc + tsup build both pass |
-| `react-native/` — `@deeplink/react-native-sdk` | React Native apps | ✅ tsc + tsup build both pass |
+| `web/` — `@wilderbots/deeplink-sdk` | Node/Next.js backends, browser-side web apps | ✅ tsc + tsup build both pass |
+| `react-native/` — `@wilderbots/deeplink-react-native` | React Native apps | ✅ tsc + tsup build both pass |
 | `flutter/` — `deeplink_flutter_sdk` | Flutter apps | ⚠️ hand-verified only — `pub.dev` isn't reachable from this environment, so run `flutter pub get` + `dart analyze` yourself before shipping |
 
 All three talk to the same two backend endpoints for the interesting part

@@ -11,17 +11,17 @@ Two things live in this package:
 ## Install
 
 ```bash
-npm install @deeplink/sdk
+npm install @wilderbots/deeplink-sdk
 ```
 
 ## Server-side: create a link
 
 ```ts
-import { DeeplinkClient } from '@deeplink/sdk';
+import { DeeplinkClient } from '@wilderbots/deeplink-sdk';
 
 const deeplink = new DeeplinkClient({
   apiKey: process.env.DEEPLINK_API_KEY!,
-  baseUrl: 'https://api.yourservice.in',
+  baseUrl: 'https://apilink.wilderbots.com',
 });
 
 const link = await deeplink.createLink({
@@ -30,7 +30,7 @@ const link = await deeplink.createLink({
   utm: { source: 'newsletter', medium: 'email', campaign: 'diwali24' },
 });
 
-console.log(link.shortUrl); // https://go.clientbrand.com/diwali-sale
+console.log(link.shortUrl); // https://go.wilderbots.com/diwali-sale
 ```
 
 If you need to create smart links from a browser-based app, do so through your
@@ -45,10 +45,10 @@ website instead (or a companion web experience), you can recover what they were
 trying to reach:
 
 ```ts
-import { checkDeferredMatch } from '@deeplink/sdk';
+import { checkDeferredMatch } from '@wilderbots/deeplink-sdk';
 
 useEffect(() => {
-  checkDeferredMatch('https://api.yourservice.in').then((result) => {
+  checkDeferredMatch('https://apilink.wilderbots.com').then((result) => {
     if (result.matched) {
       // e.g. { screen: 'offer', offerId: 'diwali24' }
       console.log(result.deepLinkPayload);

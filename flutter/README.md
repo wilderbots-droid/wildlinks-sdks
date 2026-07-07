@@ -33,8 +33,7 @@ This package now has the files pub.dev requires: `LICENSE` (MIT), `CHANGELOG.md`
 and an `example/` app. Before you publish:
 
 1. Replace the placeholder GitHub URLs in `pubspec.yaml` (`homepage`,
-   `repository`, `issue_tracker`) with your actual repo — pub.dev checks these
-   resolve.
+   `repository`, `issue_tracker`) if you move this package into its own public repo.
 2. Double-check the `topics:` list in `pubspec.yaml` against pub.dev's
    [current allowed topics](https://pub.dev/create-package/topics) — it
    validates against a fixed list and will reject unrecognized ones.
@@ -68,8 +67,8 @@ import 'package:deeplink_flutter_sdk/deeplink_flutter_sdk.dart';
 
 void main() {
   DeeplinkSdk.init(const DeeplinkConfig(
-    baseUrl: 'https://api.yourservice.in',
-    domains: ['go.yourbrand.com'],
+    baseUrl: 'https://apilink.wilderbots.com',
+    domains: ['go.wilderbots.com'],
   ));
   runApp(const MyApp());
 }
@@ -116,8 +115,8 @@ import 'package:deeplink_flutter_sdk/deeplink_flutter_sdk.dart';
 
 void main() {
   DeeplinkSdk.init(const DeeplinkConfig(
-    baseUrl: 'https://api.yourservice.in',
-    domains: ['go.yourbrand.com'],
+    baseUrl: 'https://apilink.wilderbots.com',
+    domains: ['go.wilderbots.com'],
     apiKey: 'dlk_xxx',
   ));
   runApp(const MyApp());

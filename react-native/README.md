@@ -11,7 +11,7 @@ Handles two paths a smart link tap can take once your app exists:
 ## Install
 
 ```bash
-npm install @deeplink/react-native-sdk
+npm install @wilderbots/deeplink-react-native
 npm install @react-native-clipboard/clipboard   # optional, only needed for deferred matching
 ```
 
@@ -32,12 +32,12 @@ duplicating what React Navigation's own linking docs cover:
 ## Usage
 
 ```tsx
-import { init, useDeeplink } from '@deeplink/react-native-sdk';
+import { init, useDeeplink } from '@wilderbots/deeplink-react-native';
 
 // Once, at app startup (e.g. top of App.tsx, outside the component)
 init({
-  baseUrl: 'https://api.yourservice.in',
-  domains: ['go.yourbrand.com'],
+  baseUrl: 'https://apilink.wilderbots.com',
+  domains: ['go.wilderbots.com'],
   apiKey: 'dlk_xxx',
 });
 
@@ -58,7 +58,7 @@ function App() {
 ## Create links from your app
 
 ```ts
-import { createDeepLink } from '@deeplink/react-native-sdk';
+import { createDeepLink } from '@wilderbots/deeplink-react-native';
 
 const link = await createDeepLink({
   defaultUrl: 'https://example.com/promo',
@@ -67,7 +67,7 @@ const link = await createDeepLink({
 });
 
 console.log(link.shortUrl);
-// https://go.yourbrand.com/launch-offer
+// https://go.wilderbots.com/launch-offer
 ```
 
 Use `createLink` for the full created link object, `createShortLink` to return only
@@ -76,9 +76,9 @@ Use `createLink` for the full created link object, `createShortLink` to return o
 Or call the lower-level functions directly if you're not using the hook:
 
 ```ts
-import { handleIncomingUrl, checkDeferredInstall } from '@deeplink/react-native-sdk';
+import { handleIncomingUrl, checkDeferredInstall } from '@wilderbots/deeplink-react-native';
 
-const result = await handleIncomingUrl('https://go.yourbrand.com/diwali-sale');
+const result = await handleIncomingUrl('https://go.wilderbots.com/diwali-sale');
 // { matched: true, destinationUrl: '...', deepLinkPayload: {...} }
 ```
 
