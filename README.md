@@ -4,9 +4,9 @@ Three packages, one platform. Pick what matches your stack:
 
 | Package | For | Verified |
 |---|---|---|
-| `web/` — `@wilderbots/deeplink-sdk` | Node/Next.js backends, browser-side web apps | ✅ tsc + tsup build both pass |
-| `react-native/` — `@wilderbots/deeplink-react-native` | React Native apps | ✅ tsc + tsup build both pass |
-| `flutter/` — `deeplink_flutter_sdk` | Flutter apps | ⚠️ hand-verified only — `pub.dev` isn't reachable from this environment, so run `flutter pub get` + `dart analyze` yourself before shipping |
+| `web/` — `@wilderbots/wildlinks-sdk` | Node/Next.js backends, browser-side web apps | ✅ tsc + tsup build both pass |
+| `react-native/` — `@wilderbots/wildlinks-react-native` | React Native apps | ✅ tsc + tsup build both pass |
+| `flutter/` — `wildlinks_flutter_sdk` | Flutter apps | ⚠️ run `flutter pub get` + `dart analyze` before publishing |
 
 All three talk to the same two backend endpoints for the interesting part
 (deep linking, not link management):
@@ -18,7 +18,7 @@ All three talk to the same two backend endpoints for the interesting part
 
 Both are public (no API key) since they're called from inside a consumer's own
 app/browser, not a trusted backend. Link *creation* (`POST /api/v1/links`) does
-require an API key — that's the `DeeplinkClient` in the web SDK, meant for
+require an API key — that's the `WildlinksClient` in the web SDK, meant for
 server-side use only.
 
 See each package's own README for install + usage.

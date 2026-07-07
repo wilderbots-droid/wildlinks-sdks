@@ -1,6 +1,6 @@
-# deeplink_flutter_sdk example
+# wildlinks_flutter_sdk example
 
-Minimal Flutter app showing `DeeplinkSdk` + `DeeplinkListener` end to end.
+Minimal Flutter app showing `WildlinksSdk` + `WildlinksListener` end to end.
 
 ```bash
 cd example

@@ -1,4 +1,4 @@
-export interface DeeplinkClientOptions {
+export interface WildlinksClientOptions {
   apiKey: string;
   baseUrl: string; // e.g. "https://api.yourservice.in"
 }
@@ -40,15 +40,15 @@ export interface LinkResponse {
 }
 
 /**
- * Server-side client for the Deeplink platform. Use this from your backend or build
+ * Server-side client for the WildLinks platform. Use this from your backend or build
  * scripts to create/manage links — never ship your API key into a browser bundle or
  * mobile app binary.
  */
-export class DeeplinkClient {
+export class WildlinksClient {
   private apiKey: string;
   private baseUrl: string;
 
-  constructor(options: DeeplinkClientOptions) {
+  constructor(options: WildlinksClientOptions) {
     this.apiKey = options.apiKey;
     this.baseUrl = options.baseUrl.replace(/\/$/, '');
   }
@@ -65,7 +65,7 @@ export class DeeplinkClient {
 
     const body = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error(body?.error || `Deeplink API request failed (${res.status})`);
+      throw new Error(body?.error || `WildLinks API request failed (${res.status})`);
     }
     return body as T;
   }

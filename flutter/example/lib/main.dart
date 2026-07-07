@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:deeplink_flutter_sdk/deeplink_flutter_sdk.dart';
+import 'package:wildlinks_flutter_sdk/wildlinks_flutter_sdk.dart';
 
 void main() {
   // Call this once, before runApp. Replace with your own API base URL and the
   // branded domain(s) you configured in the Deeplink dashboard's Domains page.
-  DeeplinkSdk.init(const DeeplinkConfig(
+  WildlinksSdk.init(const WildlinksConfig(
     baseUrl: 'https://api.yourservice.in',
     domains: ['go.yourbrand.com'],
   ));
@@ -33,7 +33,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final DeeplinkListener _listener = DeeplinkListener();
+  final WildlinksListener _listener = WildlinksListener();
   ResolvedLink? _lastResolved;
   String _status = 'Waiting for a smart link…';
 

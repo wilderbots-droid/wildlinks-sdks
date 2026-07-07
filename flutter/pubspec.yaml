@@ -1,4 +1,4 @@
-name: deeplink_flutter_sdk
+name: wildlinks_flutter_sdk
 description: >
   Flutter SDK for the WildLinks smart link platform - Universal Link / App Link
   resolution and deferred deep link matching for apps built with Flutter.

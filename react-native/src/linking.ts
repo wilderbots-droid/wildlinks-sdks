@@ -42,7 +42,7 @@ export interface LinkResponse {
   isActive: boolean;
 }
 
-export interface DeeplinkConfig {
+export interface WildlinksConfig {
   baseUrl: string; // e.g. "https://api.yourservice.in"
   domains: string[]; // hostnames this app should treat as its own smart links, e.g. ["go.myapp.com"]
   apiKey?: string;
@@ -56,20 +56,20 @@ export interface ResolvedLink {
   error?: string;
 }
 
-let config: DeeplinkConfig | null = null;
+let config: WildlinksConfig | null = null;
 
-export function init(cfg: DeeplinkConfig) {
+export function init(cfg: WildlinksConfig) {
   config = cfg;
 }
 
-function requireConfig(): DeeplinkConfig {
+function requireConfig(): WildlinksConfig {
   if (!config) {
-    throw new Error('Deeplink SDK not initialized - call init({ baseUrl, domains }) once at app startup');
+    throw new Error('WildLinks SDK not initialized - call init({ baseUrl, domains }) once at app startup');
   }
   return config;
 }
 
-function requireApiKey(cfg: DeeplinkConfig): string {
+function requireApiKey(cfg: WildlinksConfig): string {
   if (!cfg.apiKey) {
     throw new Error('API key is required to create links. Pass apiKey to init({ baseUrl, domains, apiKey }) once at app startup');
   }
@@ -91,7 +91,7 @@ async function apiRequest<T>(path: string, body: unknown): Promise<T> {
 
   const responseBody = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(responseBody?.error || `Deeplink API request failed (${res.status})`);
+    throw new Error(responseBody?.error || `WildLinks API request failed (${res.status})`);
   }
   return responseBody as T;
 }

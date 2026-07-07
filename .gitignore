@@ -20,4 +20,5 @@ flutter/pubspec.lock
 flutter/example/.dart_tool/
 flutter/example/build/
 flutter/example/.packages
+flutter/example/.flutter-plugins-dependencies
 flutter/example/pubspec.lock

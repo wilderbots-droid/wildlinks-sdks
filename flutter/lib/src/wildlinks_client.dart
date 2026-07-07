@@ -2,30 +2,30 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/services.dart' show Clipboard, ClipboardData;
+import 'package:flutter/services.dart' show Clipboard;
 import 'package:http/http.dart' as http;
 
 import 'models.dart';
 
-/// Configuration for [DeeplinkSdk]. Call [DeeplinkSdk.init] once at app startup,
+/// Configuration for [WildlinksSdk]. Call [WildlinksSdk.init] once at app startup,
 /// before you check for incoming links or a deferred install match.
-class DeeplinkConfig {
+class WildlinksConfig {
   final String baseUrl; // e.g. "https://api.yourservice.in"
   final List<String> domains; // hostnames this app owns, e.g. ["go.yourbrand.com"]
   final String? apiKey; // API key for creating smart links from the app
 
-  const DeeplinkConfig({required this.baseUrl, required this.domains, this.apiKey});
+  const WildlinksConfig({required this.baseUrl, required this.domains, this.apiKey});
 }
 
-/// Entry point for the Deeplink Flutter SDK. All methods are static so you can
+/// Entry point for the WildLinks Flutter SDK. All methods are static so you can
 /// call them from anywhere in your app after [init] has run once.
-class DeeplinkSdk {
-  DeeplinkSdk._();
+class WildlinksSdk {
+  WildlinksSdk._();
 
-  static DeeplinkConfig? _config;
+  static WildlinksConfig? _config;
   static http.Client _httpClient = http.Client();
 
-  static void init(DeeplinkConfig config) {
+  static void init(WildlinksConfig config) {
     _config = config;
   }
 
@@ -38,11 +38,11 @@ class DeeplinkSdk {
     _httpClient = http.Client();
   }
 
-  static DeeplinkConfig _requireConfig() {
+  static WildlinksConfig _requireConfig() {
     final cfg = _config;
     if (cfg == null) {
       throw StateError(
-        'DeeplinkSdk not initialized - call DeeplinkSdk.init(DeeplinkConfig(...)) once at app startup',
+        'WildlinksSdk not initialized - call WildlinksSdk.init(WildlinksConfig(...)) once at app startup',
       );
     }
     return cfg;
@@ -143,7 +143,7 @@ class DeeplinkSdk {
   }
 
   /// Create a new smart link on the service and return the full link object.
-  /// Requires [apiKey] in [DeeplinkConfig].
+  /// Requires [apiKey] in [WildlinksConfig].
   static Future<LinkModel> createLink({
     required String defaultUrl,
     String? domainId,
@@ -158,7 +158,7 @@ class DeeplinkSdk {
   }) async {
     final cfg = _requireConfig();
     if (cfg.apiKey == null || cfg.apiKey!.isEmpty) {
-      throw StateError('API key is required to create links. Pass apiKey to DeeplinkConfig.');
+      throw StateError('API key is required to create links. Pass apiKey to WildlinksConfig.');
     }
 
     final uri = Uri.parse('${_trimTrailingSlash(cfg.baseUrl)}/api/v1/links');

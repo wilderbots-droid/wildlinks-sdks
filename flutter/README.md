@@ -4,10 +4,9 @@ Flutter SDK for the WildLinks smart link platform: resolves Universal Links / Ap
 Links when your app is already installed, and recovers deferred deep link intent
 on first launch after a fresh install.
 
-> **This package was written without running `flutter pub get` or `dart analyze`**
-> (this environment's network doesn't reach pub.dev). Review it and run those
-> yourself before shipping — the logic is straightforward but hasn't been
-> compiler-verified the way the web and React Native SDKs were.
+> **Run `flutter pub get` and `dart analyze` before publishing.**
+> The package API and docs are prepared, but your local Flutter toolchain should
+> still verify the final package state before you ship it to pub.dev.
 
 ## Install
 
@@ -15,8 +14,8 @@ Add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  deeplink_flutter_sdk:
-    path: ../deeplink_flutter_sdk   # or git/pub source once you publish it
+  wildlinks_flutter_sdk:
+    path: ../wildlinks_flutter_sdk   # or git/pub source once you publish it
   app_links: ^6.0.0
   http: ^1.2.0
 ```
@@ -44,7 +43,7 @@ and an `example/` app. Before you publish:
    dart pub publish --dry-run
    ```
    Fix anything the dry-run flags, then `dart pub publish` for real.
-4. Confirm the package name `deeplink_flutter_sdk` is still free on pub.dev —
+4. Confirm the package name `wildlinks_flutter_sdk` is still free on pub.dev —
    names are first-come, first-served.
 
 ## Native setup (required — this package doesn't replace it)
@@ -63,10 +62,10 @@ those files to decide whether to hand your app the link at all.
 ## Usage
 
 ```dart
-import 'package:deeplink_flutter_sdk/deeplink_flutter_sdk.dart';
+import 'package:wildlinks_flutter_sdk/wildlinks_flutter_sdk.dart';
 
 void main() {
-  DeeplinkSdk.init(const DeeplinkConfig(
+  WildlinksSdk.init(const WildlinksConfig(
     baseUrl: 'https://apilink.wilderbots.com',
     domains: ['go.wilderbots.com'],
   ));
@@ -80,7 +79,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _listener = DeeplinkListener();
+  final _listener = WildlinksListener();
 
   @override
   void initState() {
@@ -111,10 +110,10 @@ class _MyAppState extends State<MyApp> {
 ## Create links from your app
 
 ```dart
-import 'package:deeplink_flutter_sdk/deeplink_flutter_sdk.dart';
+import 'package:wildlinks_flutter_sdk/wildlinks_flutter_sdk.dart';
 
 void main() {
-  DeeplinkSdk.init(const DeeplinkConfig(
+  WildlinksSdk.init(const WildlinksConfig(
     baseUrl: 'https://apilink.wilderbots.com',
     domains: ['go.wilderbots.com'],
     apiKey: 'dlk_xxx',
@@ -123,7 +122,7 @@ void main() {
 }
 
 Future<void> createAndShareLink() async {
-  final link = await DeeplinkSdk.createDeepLink(
+  final link = await WildlinksSdk.createDeepLink(
     defaultUrl: 'https://yourwebsite.com/promo',
     title: 'Spring sale',
     deepLinkPayload: {'screen': 'offer', 'offerId': 'spring24'},
@@ -134,5 +133,5 @@ Future<void> createAndShareLink() async {
 }
 ```
 
-and call `DeeplinkSdk.matchDeferredToken(baseUrl, token)` directly. iOS has no
+and call `WildlinksSdk.matchDeferredToken(baseUrl, token)` directly. iOS has no
 public equivalent — clipboard is the standard approach there.

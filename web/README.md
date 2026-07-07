@@ -2,7 +2,7 @@
 
 Two things live in this package:
 
-1. **`DeeplinkClient`** — a server-side client (Node/Next.js API routes/serverless
+1. **`WildlinksClient`** — a server-side client (Node/Next.js API routes/serverless
    functions) for creating and managing smart links. Uses your API key — never ship
    this into a browser bundle.
 2. **`checkDeferredMatch` / `resolveLink`** — browser-safe helpers with no secrets,
@@ -11,20 +11,20 @@ Two things live in this package:
 ## Install
 
 ```bash
-npm install @wilderbots/deeplink-sdk
+npm install @wilderbots/wildlinks-sdk
 ```
 
 ## Server-side: create a link
 
 ```ts
-import { DeeplinkClient } from '@wilderbots/deeplink-sdk';
+import { WildlinksClient } from '@wilderbots/wildlinks-sdk';
 
-const deeplink = new DeeplinkClient({
+const wildlinks = new WildlinksClient({
   apiKey: process.env.DEEPLINK_API_KEY!,
   baseUrl: 'https://apilink.wilderbots.com',
 });
 
-const link = await deeplink.createLink({
+const link = await wildlinks.createLink({
   defaultUrl: 'https://clientbrand.com/diwali-sale',
   deepLinkPayload: { screen: 'offer', offerId: 'diwali24' },
   utm: { source: 'newsletter', medium: 'email', campaign: 'diwali24' },
@@ -35,7 +35,7 @@ console.log(link.shortUrl); // https://go.wilderbots.com/diwali-sale
 
 If you need to create smart links from a browser-based app, do so through your
 own backend or serverless API route so the API key stays secret. For example,
-create a route that calls `DeeplinkClient.createLink()` and return the generated
+create a route that calls `WildlinksClient.createLink()` and return the generated
 `shortUrl` to the browser.
 
 ## Client-side: pick up a deferred deep link on your website
@@ -45,7 +45,7 @@ website instead (or a companion web experience), you can recover what they were
 trying to reach:
 
 ```ts
-import { checkDeferredMatch } from '@wilderbots/deeplink-sdk';
+import { checkDeferredMatch } from '@wilderbots/wildlinks-sdk';
 
 useEffect(() => {
   checkDeferredMatch('https://apilink.wilderbots.com').then((result) => {

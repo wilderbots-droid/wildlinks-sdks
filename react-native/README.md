@@ -11,7 +11,7 @@ Handles two paths a smart link tap can take once your app exists:
 ## Install
 
 ```bash
-npm install @wilderbots/deeplink-react-native
+npm install @wilderbots/wildlinks-react-native
 npm install @react-native-clipboard/clipboard   # optional, only needed for deferred matching
 ```
 
@@ -32,17 +32,17 @@ duplicating what React Navigation's own linking docs cover:
 ## Usage
 
 ```tsx
-import { init, useDeeplink } from '@wilderbots/deeplink-react-native';
+import { initWildlinks, useWildlinks } from '@wilderbots/wildlinks-react-native';
 
 // Once, at app startup (e.g. top of App.tsx, outside the component)
-init({
+initWildlinks({
   baseUrl: 'https://apilink.wilderbots.com',
   domains: ['go.wilderbots.com'],
   apiKey: 'dlk_xxx',
 });
 
 function App() {
-  const { resolved, loading } = useDeeplink();
+  const { resolved, loading } = useWildlinks();
 
   useEffect(() => {
     if (resolved?.matched && resolved.deepLinkPayload) {
@@ -58,9 +58,9 @@ function App() {
 ## Create links from your app
 
 ```ts
-import { createDeepLink } from '@wilderbots/deeplink-react-native';
+import { createWildlink } from '@wilderbots/wildlinks-react-native';
 
-const link = await createDeepLink({
+const link = await createWildlink({
   defaultUrl: 'https://example.com/promo',
   title: 'Launch Offer',
   deepLinkPayload: { screen: 'offer', offerId: 'spring24' },
@@ -71,14 +71,14 @@ console.log(link.shortUrl);
 ```
 
 Use `createLink` for the full created link object, `createShortLink` to return only
-`shortUrl`, or `createDeepLink` as a convenience wrapper.
+`shortUrl`, or `createWildlink` as a convenience wrapper.
 
 Or call the lower-level functions directly if you're not using the hook:
 
 ```ts
-import { handleIncomingUrl, checkDeferredInstall } from '@wilderbots/deeplink-react-native';
+import { handleWildlinksUrl, checkWildlinksInstall } from '@wilderbots/wildlinks-react-native';
 
-const result = await handleIncomingUrl('https://go.wilderbots.com/diwali-sale');
+const result = await handleWildlinksUrl('https://go.wilderbots.com/diwali-sale');
 // { matched: true, destinationUrl: '...', deepLinkPayload: {...} }
 ```
 

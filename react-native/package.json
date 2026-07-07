@@ -1,5 +1,5 @@
 {
-  "name": "@wilderbots/deeplink-react-native",
+  "name": "@wilderbots/wildlinks-react-native",
   "version": "1.0.0",
   "description": "React Native SDK for the WildLinks smart link platform - Universal Link/App Link handling and deferred deep link matching",
   "main": "dist/index.js",

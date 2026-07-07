@@ -1,5 +1,5 @@
 {
-  "name": "@wilderbots/deeplink-sdk",
+  "name": "@wilderbots/wildlinks-sdk",
   "version": "1.0.0",
   "description": "Web SDK for the WildLinks smart link platform - server-side link management and browser-side deferred deep link matching",
   "main": "dist/index.js",
