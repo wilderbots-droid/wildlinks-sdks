@@ -28,7 +28,7 @@ multiple apps share one branded domain.
 Both are public (no API key) since they're called from inside a consumer's own
 app/browser, not a trusted backend. Link *creation* (`POST /api/v1/links`) does
 require an API key — that's the `WildlinksClient` in the web SDK, meant for
-server-side use only. Link creation can also include `appProfileId` when you want
-the generated URL to use a specific app's branding and path prefix.
+server-side use only. Link creation can include `pathPrefix` when you want the
+generated URL to use a specific app namespace on a shared domain.
 
 See each package's own README for install + usage.

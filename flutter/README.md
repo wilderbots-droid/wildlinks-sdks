@@ -29,6 +29,10 @@ flutter pub get
   `go.yourbrand.com` in `AndroidManifest.xml`, matching the `packageName` +
   `sha256CertFingerprints` configured in the dashboard.
 
+The App Store URL is mainly the fallback when the app is not installed.
+Installed-build Universal Link behavior depends on the Associated Domains
+entitlement, matching app ID, and a valid AASA file.
+
 Both of those dashboard entries are what make `/.well-known/apple-app-site-association`
 and `/.well-known/assetlinks.json` serve correctly for your domain — the OS checks
 those files to decide whether to hand your app the link at all.
@@ -133,7 +137,7 @@ Future<void> createAndShareLink() async {
   final link = await WildlinksSdk.createDeepLink(
     defaultUrl: 'https://yourwebsite.com/promo',
     title: 'Spring sale',
-    appProfileId: 'app_profile_123',
+    pathPrefix: 'x4I9',
     deepLinkPayload: {'screen': 'offer', 'offerId': 'spring24'},
   );
 
@@ -142,6 +146,6 @@ Future<void> createAndShareLink() async {
 }
 ```
 
-Use `appProfileId` when the link should belong to a specific app profile in the
-dashboard. That app profile controls branding, mobile platform settings, and the
-optional per-app path prefix used in the generated short URL.
+Use `pathPrefix` when the app should create links under a specific namespace like
+`https://link.valueshift.in/x4I9/launch-offer`. The backend resolves the matching
+app profile from that prefix on the selected domain.
