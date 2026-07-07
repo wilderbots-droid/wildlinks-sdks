@@ -10,9 +10,7 @@ Add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  wildlinks_flutter_sdk: ^1.0.1
-  app_links: ^6.0.0
-  http: ^1.2.0
+  wildlinks_flutter_sdk: ^1.0.3
 ```
 
 Then:
@@ -65,8 +63,14 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _listener.stream.listen((resolved) {
-      if (resolved.matched && resolved.deepLinkPayload != null) {
-        // e.g. {'screen': 'offer', 'offerId': 'diwali24'}
+      if (!resolved.matched) return;
+
+      // Works for every matched link, even when no app payload was attached.
+      print('Destination URL: ${resolved.destinationUrl}');
+
+      // Optional app-specific routing metadata, only present if you created
+      // the link with deepLinkPayload.
+      if (resolved.deepLinkPayload != null) {
         Navigator.of(context).pushNamed(
           resolved.deepLinkPayload!['screen'] as String,
           arguments: resolved.deepLinkPayload,
@@ -87,7 +91,26 @@ class _MyAppState extends State<MyApp> {
 }
 ```
 
+`deepLinkPayload` is optional. If you create a normal smart link without app
+metadata, `resolved.deepLinkPayload` will be `null` and you can just use
+`resolved.destinationUrl`.
+
+## Create a simple smart link
+
+Use this when you only need a short link that resolves to a destination URL.
+
+```dart
+final link = await WildlinksSdk.createDeepLink(
+  defaultUrl: 'https://yourwebsite.com/promo',
+  title: 'Spring sale',
+);
+
+print(link.shortUrl);
+```
+
 ## Create links from your app
+
+Use `deepLinkPayload` only when your app needs extra routing data.
 
 ```dart
 import 'package:wildlinks_flutter_sdk/wildlinks_flutter_sdk.dart';

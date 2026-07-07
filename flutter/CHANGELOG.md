@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3
+
+- Clarify the README examples for links with and without `deepLinkPayload`.
+
+## 1.0.2
+
+- Fix the install instructions so apps only add `wildlinks_flutter_sdk`.
+
 ## 1.0.1
 
 - Clean up the public README for pub.dev.
