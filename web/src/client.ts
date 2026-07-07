@@ -18,6 +18,7 @@ export interface RoutingRuleInput {
 export interface CreateLinkInput {
   domainId?: string;
   appProfileId?: string;
+  pathPrefix?: string;
   slug?: string;
   title?: string;
   defaultUrl: string;

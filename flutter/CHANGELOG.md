@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5
+
+- Allow link creation by `pathPrefix` so apps can target prefixes like `/CFlU/` without passing an app profile ID.
+
 ## 1.0.4
 
 - Support app-specific prefixed links such as `/x4I9/slug`.

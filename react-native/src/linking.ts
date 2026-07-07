@@ -21,6 +21,7 @@ export interface RoutingRuleInput {
 export interface CreateLinkInput {
   domainId?: string;
   appProfileId?: string;
+  pathPrefix?: string;
   slug?: string;
   title?: string;
   defaultUrl: string;
@@ -204,7 +205,13 @@ export async function createLink(input: CreateLinkInput): Promise<LinkResponse> 
   return apiRequest<LinkResponse>('/api/v1/links', input);
 }
 
-export async function createShortLink(input: { defaultUrl: string; domainId?: string; appProfileId?: string; slug?: string }): Promise<string> {
+export async function createShortLink(input: {
+  defaultUrl: string;
+  domainId?: string;
+  appProfileId?: string;
+  pathPrefix?: string;
+  slug?: string;
+}): Promise<string> {
   const link = await createLink(input);
   return link.shortUrl;
 }

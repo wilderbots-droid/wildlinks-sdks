@@ -11,7 +11,7 @@ Add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  wildlinks_flutter_sdk: ^1.0.4
+  wildlinks_flutter_sdk: ^1.0.5
 ```
 
 Then:
