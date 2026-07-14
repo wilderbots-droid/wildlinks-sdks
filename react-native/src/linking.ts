@@ -32,6 +32,7 @@ export interface CreateLinkInput {
   expiresAt?: string;
   maxClicks?: number;
   tags?: string[];
+  preferShortDomain?: boolean;
 }
 
 export interface LinkResponse {
@@ -212,7 +213,10 @@ export async function createShortLink(input: {
   pathPrefix?: string;
   slug?: string;
 }): Promise<string> {
-  const link = await createLink(input);
+  const link = await createLink({
+    ...input,
+    preferShortDomain: true,
+  });
   return link.shortUrl;
 }
 

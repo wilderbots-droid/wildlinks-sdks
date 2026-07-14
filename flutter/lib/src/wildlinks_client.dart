@@ -159,6 +159,7 @@ class WildlinksSdk {
     String? expiresAt,
     int? maxClicks,
     List<String>? tags,
+    Map<String, dynamic>? extra,
   }) async {
     final cfg = _requireConfig();
     if (cfg.apiKey == null || cfg.apiKey!.isEmpty) {
@@ -179,6 +180,7 @@ class WildlinksSdk {
       if (expiresAt != null) 'expiresAt': expiresAt,
       if (maxClicks != null) 'maxClicks': maxClicks,
       if (tags != null) 'tags': tags,
+      if (extra != null) ...extra,
     };
 
     final res = await _httpClient.post(
@@ -206,6 +208,9 @@ class WildlinksSdk {
       appProfileId: appProfileId,
       pathPrefix: pathPrefix,
       slug: slug,
+      extra: {
+        'preferShortDomain': true,
+      },
     );
     return result.shortUrl;
   }
