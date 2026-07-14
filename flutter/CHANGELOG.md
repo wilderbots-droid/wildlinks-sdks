@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.6
+
+- Add a dedicated `createShortLink()` example for plain short URLs.
+- Clarify when to use short links versus smart deep links in the docs.
+
 ## 1.0.5
 
 - Allow link creation by `pathPrefix` so apps can target prefixes like `/CFlU/` without passing an app profile ID.
