@@ -17,12 +17,13 @@ class ResolvedLink {
   factory ResolvedLink.notMatched([String? error]) =>
       ResolvedLink(matched: false, error: error);
 
-  factory ResolvedLink.fromJson(Map<String, dynamic> json, {bool matched = true}) {
+  factory ResolvedLink.fromJson(Map<String, dynamic> json,
+      {bool matched = true}) {
     return ResolvedLink(
       matched: matched,
       title: json['title'] as String?,
       destinationUrl: json['destinationUrl'] as String?,
-      deepLinkPayload: (json['deepLinkPayload'] as Map?)?.cast<String, dynamic>(),
+      deepLinkPayload: _asStringDynamicMap(json['deepLinkPayload']),
     );
   }
 
@@ -76,21 +77,29 @@ class LinkModel {
       shortUrl: json['shortUrl'] as String,
       isActive: json['isActive'] as bool? ?? true,
       clickCount: json['clickCount'] as int? ?? 0,
-      deepLinkPayload: (json['deepLinkPayload'] as Map?)?.cast<String, dynamic>(),
+      deepLinkPayload: _asStringDynamicMap(json['deepLinkPayload']),
       password: json['password'] as String?,
       expiresAt: json['expiresAt'] as String?,
       maxClicks: json['maxClicks'] as int?,
       tags: (json['tags'] as List?)?.map((e) => e.toString()).toList() ?? [],
-      domain: (json['domain'] as Map?)?.cast<String, dynamic>(),
+      domain: _asStringDynamicMap(json['domain']),
       rules: (json['rules'] as List?)
-              ?.map((item) => (item as Map).cast<String, dynamic>())
+              ?.whereType<Map>()
+              .map((item) => item.cast<String, dynamic>())
               .toList() ??
           [],
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'] as String)
+          : null,
     );
   }
 
   @override
   String toString() =>
       'LinkModel(id: $id, slug: $slug, shortUrl: $shortUrl, defaultUrl: $defaultUrl, isActive: $isActive, clickCount: $clickCount)';
+}
+
+Map<String, dynamic>? _asStringDynamicMap(Object? value) {
+  if (value is Map) return value.cast<String, dynamic>();
+  return null;
 }
