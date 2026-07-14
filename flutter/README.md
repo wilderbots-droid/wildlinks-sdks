@@ -104,20 +104,19 @@ class _MyAppState extends State<MyApp> {
 metadata, `resolved.deepLinkPayload` will be `null` and you can just use
 `resolved.destinationUrl`.
 
-## Create a simple smart link
+## Create a plain short link
 
-Use this when you only need a short link that resolves to a destination URL.
+Use this when you only need a short URL that redirects to a destination URL.
 
 ```dart
-final link = await WildlinksSdk.createDeepLink(
-  defaultUrl: 'https://yourwebsite.com/promo',
-  title: 'Spring sale',
+final shortUrl = await WildlinksSdk.createShortLink(
+  'https://yourwebsite.com/promo',
 );
 
-print(link.shortUrl);
+print(shortUrl);
 ```
 
-## Create links from your app
+## Create smart deep links from your app
 
 Use `deepLinkPayload` only when your app needs extra routing data.
 

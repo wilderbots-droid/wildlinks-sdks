@@ -79,6 +79,22 @@ Use `createLink` for the full created link object, `createShortLink` to return o
 `shortUrl`, or `createWildlink` as a convenience wrapper. Pass `appProfileId` when
 the link should be generated for a specific app profile from the WildLinks dashboard.
 
+If you only want a plain short URL that redirects to a long URL, use:
+
+```ts
+import { createShortLink } from '@wilderbots/wildlinks-react-native';
+
+const shortUrl = await createShortLink({
+  defaultUrl: 'https://example.com/promo',
+});
+
+console.log(shortUrl);
+// https://go.wilderbots.com/launch-offer
+```
+
+That helper prefers the shortest non-prefixed URL. Use `createWildlink`,
+`createDeepLink`, or `createLink` when you want app-specific deep-link behavior.
+
 Or call the lower-level functions directly if you're not using the hook:
 
 ```ts

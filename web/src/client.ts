@@ -29,6 +29,7 @@ export interface CreateLinkInput {
   expiresAt?: string;
   maxClicks?: number;
   tags?: string[];
+  preferShortDomain?: boolean;
 }
 
 export interface LinkResponse {
@@ -74,6 +75,23 @@ export class WildlinksClient {
 
   createLink(input: CreateLinkInput): Promise<LinkResponse> {
     return this.request<LinkResponse>('/api/v1/links', { method: 'POST', body: JSON.stringify(input) });
+  }
+
+  createShortLink(input: {
+    defaultUrl: string;
+    domainId?: string;
+    appProfileId?: string;
+    pathPrefix?: string;
+    slug?: string;
+  }): Promise<string> {
+    return this.createLink({
+      ...input,
+      preferShortDomain: true,
+    }).then((link) => link.shortUrl);
+  }
+
+  createDeepLink(input: CreateLinkInput): Promise<LinkResponse> {
+    return this.createLink(input);
   }
 
   getLink(linkId: string): Promise<LinkResponse> {
