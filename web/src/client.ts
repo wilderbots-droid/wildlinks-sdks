@@ -7,7 +7,16 @@ export interface RoutingRuleInput {
   priority: number;
   conditions: {
     platform?: ('ios' | 'android' | 'desktop' | 'other')[];
+    deviceTypes?: string[];
+    browsers?: string[];
+    deviceVendors?: string[];
+    deviceModels?: string[];
     countries?: string[];
+    regions?: string[];
+    cities?: string[];
+    languages?: string[];
+    minOsVersion?: string;
+    maxOsVersion?: string;
     startTime?: string;
     endTime?: string;
     daysOfWeek?: number[];
@@ -25,7 +34,43 @@ export interface CreateLinkInput {
   rules?: RoutingRuleInput[];
   deepLinkPayload?: Record<string, unknown>;
   utm?: { source?: string; medium?: string; campaign?: string; term?: string; content?: string };
+  marketing?: {
+    referralCode?: string;
+    affiliateId?: string;
+    couponCode?: string;
+    promoCode?: string;
+    appendToDestination?: boolean;
+  };
+  leadCapture?: {
+    enabled?: boolean;
+    title?: string;
+    description?: string;
+    fields?: { name?: boolean; email?: boolean; phone?: boolean; company?: boolean };
+    requireConsent?: boolean;
+    consentText?: string;
+    submitButtonLabel?: string;
+  };
+  retargetingPixels?: {
+    provider: 'meta' | 'google' | 'custom';
+    pixelId?: string;
+    eventName?: string;
+    imageUrl?: string;
+    isActive?: boolean;
+  }[];
+  ctaOverlay?: {
+    enabled?: boolean;
+    position?: 'top' | 'bottom';
+    title?: string;
+    message?: string;
+    buttonLabel?: string;
+    buttonUrl?: string;
+    backgroundColor?: string;
+    textColor?: string;
+    buttonColor?: string;
+    dismissible?: boolean;
+  };
   password?: string;
+  startsAt?: string;
   expiresAt?: string;
   maxClicks?: number;
   tags?: string[];
@@ -40,6 +85,22 @@ export interface LinkResponse {
   shortUrl: string;
   clickCount: number;
   isActive: boolean;
+  marketing?: CreateLinkInput['marketing'];
+  leadCapture?: CreateLinkInput['leadCapture'];
+  retargetingPixels?: CreateLinkInput['retargetingPixels'];
+  ctaOverlay?: CreateLinkInput['ctaOverlay'];
+  startsAt?: string | null;
+  expiresAt?: string | null;
+}
+
+export interface TrackEventInput {
+  name: string;
+  linkId?: string;
+  visitorId?: string;
+  value?: number;
+  currency?: string;
+  metadata?: Record<string, unknown>;
+  occurredAt?: string;
 }
 
 /**
@@ -100,5 +161,9 @@ export class WildlinksClient {
 
   getQrCode(linkId: string, format: 'png' | 'svg' = 'png'): Promise<{ shortUrl: string; qrCodeDataUrl?: string }> {
     return this.request(`/api/v1/links/${linkId}/qrcode?format=${format}`);
+  }
+
+  trackEvent(input: TrackEventInput): Promise<{ id: string; name: string; linkId?: string; occurredAt: string }> {
+    return this.request('/api/v1/events', { method: 'POST', body: JSON.stringify(input) });
   }
 }

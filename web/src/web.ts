@@ -1,7 +1,10 @@
 export interface MatchResult {
   matched: boolean;
+  installId?: string;
+  openId?: string;
   deepLinkPayload?: Record<string, unknown>;
   destinationUrl?: string;
+  installAttributionProvider?: string | null;
   error?: string;
 }
 
@@ -46,13 +49,47 @@ export async function checkDeferredMatch(baseUrl: string): Promise<MatchResult> 
 }
 
 /**
+ * Match a deferred install using an attribution campaign token from an App Store
+ * provider or custom onboarding flow. Accepts either the raw token or `wl_<token>`.
+ */
+export async function matchInstallAttributionToken(
+  baseUrl: string,
+  installAttributionToken: string,
+  provider = 'app-store-campaign-token'
+): Promise<MatchResult> {
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/$/, '')}/api/v1/match/install-attribution`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ installAttributionToken, provider }),
+    });
+    const body = await res.json();
+    return body as MatchResult;
+  } catch (err) {
+    return { matched: false, error: err instanceof Error ? err.message : 'Network error' };
+  }
+}
+
+/**
  * Manually resolve a smart link's destination/payload without following the redirect -
  * useful if you're building your own custom interstitial or want to preview a link's
  * routing outcome client-side. `platform` should be one of 'ios' | 'android' | 'desktop' | 'other'.
  */
 export async function resolveLink(
   baseUrl: string,
-  params: { domain: string; slug: string; platform?: string; password?: string }
+  params: {
+    domain: string;
+    slug: string;
+    platform?: string;
+    password?: string;
+    deviceType?: string;
+    browser?: string;
+    deviceVendor?: string;
+    deviceModel?: string;
+    country?: string;
+    region?: string;
+    city?: string;
+  }
 ): Promise<{ title?: string; destinationUrl: string; deepLinkPayload: Record<string, unknown> }> {
   const query = new URLSearchParams(params as Record<string, string>);
   const res = await fetch(`${baseUrl.replace(/\/$/, '')}/api/v1/resolve?${query.toString()}`);

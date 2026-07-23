@@ -1,0 +1,18 @@
+{
+  "name": "com.wilderbots.wildlinks",
+  "version": "1.0.0",
+  "displayName": "Wildlinks Unity SDK",
+  "description": "Unity SDK for resolving WilderLink deep links, deferred install tokens, link creation, QR codes, and custom events.",
+  "unity": "2021.3",
+  "author": {
+    "name": "Wilderbots",
+    "url": "https://wilderbots.com"
+  },
+  "keywords": [
+    "deeplink",
+    "deep-linking",
+    "attribution",
+    "qr",
+    "analytics"
+  ]
+}

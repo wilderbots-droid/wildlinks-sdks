@@ -82,6 +82,23 @@ useEffect(() => {
 }, []);
 ```
 
+For App Store install attribution providers, WilderLinks appends `ct=wl_<token>`
+to iOS App Store fallback URLs. If your onboarding flow receives that campaign
+token, exchange it with:
+
+```ts
+import { matchInstallAttributionToken } from '@wilderbots/wildlinks-sdk';
+
+const result = await matchInstallAttributionToken(
+  'https://apilink.wilderbots.com',
+  'wl_<token-from-provider>',
+  'app-store-campaign-token'
+);
+```
+
+When a match creates a tracked app open, the result includes optional `openId`.
+Use it for debugging or correlating app-side behavior with WilderLinks analytics.
+
 ## Building from source
 
 ```bash

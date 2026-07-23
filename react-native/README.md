@@ -101,7 +101,7 @@ Or call the lower-level functions directly if you're not using the hook:
 import { handleWildlinksUrl, checkWildlinksInstall } from '@wilderbots/wildlinks-react-native';
 
 const result = await handleWildlinksUrl('https://go.wilderbots.com/diwali-sale');
-// { matched: true, destinationUrl: '...', deepLinkPayload: {...} }
+// { matched: true, openId: '...', destinationUrl: '...', deepLinkPayload: {...} }
 ```
 
 That lower-level helper also works with prefixed URLs:
@@ -110,16 +110,31 @@ That lower-level helper also works with prefixed URLs:
 const result = await handleWildlinksUrl('https://go.wilderbots.com/x4I9/diwali-sale');
 ```
 
-## Improving deferred-match accuracy on Android
+## Improving deferred-match accuracy
 
 Clipboard matching works but is a fallback. For production Android traffic, wire up
 the [Play Install Referrer API](https://developer.android.com/google/play/installreferrer)
 in a small native module: have the web interstitial append
 `&dl_match_token=<token>` as an install referrer parameter on the Play Store link
 instead of relying on clipboard, then on first launch read the referrer string and
-call `matchDeferredToken(baseUrl, token)` directly. iOS has no equivalent public
-API — clipboard is the standard technique there (Branch/AppsFlyer use the same
-approach under the hood for iOS deferred matching).
+call `matchDeferredToken(baseUrl, token)` directly.
+
+For iOS App Store fallback, WilderLinks appends `ct=wl_<token>` to App Store URLs.
+If your attribution provider or custom first-launch flow returns that campaign
+token, call:
+
+```ts
+import { matchInstallAttributionToken } from '@wilderbots/wildlinks-react-native';
+
+const result = await matchInstallAttributionToken(
+  'https://apilink.wilderbots.com',
+  'wl_<token-from-provider>',
+  'app-store-campaign-token'
+);
+```
+
+Matched app opens are recorded in WilderLinks analytics. When the backend creates
+an open record, SDK results expose optional `openId`.
 
 ## Building from source
 

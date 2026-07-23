@@ -1,0 +1,21 @@
+{
+  "name": "@wilderbots/wildlinks-cli",
+  "version": "0.1.0",
+  "description": "Command-line tools for WilderLink link management.",
+  "bin": {
+    "wildlinks": "./bin/wildlinks.js",
+    "wl": "./bin/wildlinks.js"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "check": "node --check bin/wildlinks.js",
+    "smoke": "node bin/wildlinks.js --help"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}

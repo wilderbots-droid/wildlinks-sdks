@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart' show Clipboard;
@@ -11,10 +12,12 @@ import 'models.dart';
 /// before you check for incoming links or a deferred install match.
 class WildlinksConfig {
   final String baseUrl; // e.g. "https://api.yourservice.in"
-  final List<String> domains; // hostnames this app owns, e.g. ["go.yourbrand.com"]
+  final List<String>
+      domains; // hostnames this app owns, e.g. ["go.yourbrand.com"]
   final String? apiKey; // API key for creating smart links from the app
 
-  const WildlinksConfig({required this.baseUrl, required this.domains, this.apiKey});
+  const WildlinksConfig(
+      {required this.baseUrl, required this.domains, this.apiKey});
 }
 
 /// Entry point for the WildLinks Flutter SDK. All methods are static so you can
@@ -59,6 +62,23 @@ class WildlinksSdk {
     return 'other';
   }
 
+  static String? _osVersion() {
+    if (kIsWeb) return null;
+    try {
+      return Platform.operatingSystemVersion;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static String? _language() {
+    final locale = ui.PlatformDispatcher.instance.locale;
+    if (locale.languageCode.isEmpty) return null;
+    return locale.countryCode?.isNotEmpty == true
+        ? '${locale.languageCode}-${locale.countryCode}'
+        : locale.languageCode;
+  }
+
   /// Call this with any [Uri] your app receives via a Universal Link (iOS) or
   /// App Link (Android) - typically from an `app_links` stream subscription.
   /// Returns `ResolvedLink(matched: false)` for any URI that isn't one of your
@@ -67,12 +87,22 @@ class WildlinksSdk {
   static Future<ResolvedLink> handleIncomingUri(Uri uri) async {
     final cfg = _requireConfig();
 
+    final deferredToken = uri.queryParameters['dl_match_token'];
+    if (deferredToken != null &&
+        RegExp(r'^[a-f0-9]{32}$').hasMatch(deferredToken)) {
+      final deferredMatch =
+          await matchDeferredToken(cfg.baseUrl, deferredToken);
+      if (deferredMatch.matched) return deferredMatch;
+    }
+
     if (!cfg.domains.contains(uri.host)) {
       return ResolvedLink.notMatched();
     }
 
     final slug = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : '';
-    final pathPrefix = uri.pathSegments.length > 1 ? '/${uri.pathSegments.take(uri.pathSegments.length - 1).join('/')}/' : null;
+    final pathPrefix = uri.pathSegments.length > 1
+        ? '/${uri.pathSegments.take(uri.pathSegments.length - 1).join('/')}/'
+        : null;
     if (slug.isEmpty) {
       return ResolvedLink.notMatched('No slug in URI');
     }
@@ -82,17 +112,22 @@ class WildlinksSdk {
       'slug': slug,
       if (pathPrefix != null) 'pathPrefix': pathPrefix,
       'platform': _platformName(),
-      if (uri.queryParameters['pw'] != null) 'password': uri.queryParameters['pw']!,
+      if (_osVersion() != null) 'osVersion': _osVersion()!,
+      if (_language() != null) 'language': _language()!,
+      if (uri.queryParameters['pw'] != null)
+        'password': uri.queryParameters['pw']!,
     };
 
-    final resolveUri = Uri.parse('${_trimTrailingSlash(cfg.baseUrl)}/api/v1/resolve')
-        .replace(queryParameters: query);
+    final resolveUri =
+        Uri.parse('${_trimTrailingSlash(cfg.baseUrl)}/api/v1/resolve')
+            .replace(queryParameters: query);
 
     try {
       final res = await _httpClient.get(resolveUri);
       final body = jsonDecode(res.body) as Map<String, dynamic>;
       if (res.statusCode != 200) {
-        return ResolvedLink.notMatched(body['error'] as String? ?? 'Resolve failed (${res.statusCode})');
+        return ResolvedLink.notMatched(
+            body['error'] as String? ?? 'Resolve failed (${res.statusCode})');
       }
       return ResolvedLink.fromJson(body);
     } catch (err) {
@@ -120,7 +155,8 @@ class WildlinksSdk {
 
     if (clipboardText == null) return ResolvedLink.notMatched();
 
-    final match = RegExp(r'dl_match_token=([a-f0-9]{32})').firstMatch(clipboardText);
+    final match =
+        RegExp(r'dl_match_token=([a-f0-9]{32})').firstMatch(clipboardText);
     if (match == null) return ResolvedLink.notMatched();
 
     return matchDeferredToken(cfg.baseUrl, match.group(1)!);
@@ -128,7 +164,8 @@ class WildlinksSdk {
 
   /// Directly match a deferred deep link token obtained some other way
   /// (e.g. from an Android Install Referrer native channel call).
-  static Future<ResolvedLink> matchDeferredToken(String baseUrl, String matchToken) async {
+  static Future<ResolvedLink> matchDeferredToken(
+      String baseUrl, String matchToken) async {
     final uri = Uri.parse('${_trimTrailingSlash(baseUrl)}/api/v1/match');
     try {
       final res = await _httpClient.post(
@@ -138,7 +175,38 @@ class WildlinksSdk {
       );
       final body = jsonDecode(res.body) as Map<String, dynamic>;
       final matched = body['matched'] == true;
-      return matched ? ResolvedLink.fromJson(body) : ResolvedLink.notMatched(body['error'] as String?);
+      return matched
+          ? ResolvedLink.fromJson(body)
+          : ResolvedLink.notMatched(body['error'] as String?);
+    } catch (err) {
+      return ResolvedLink.notMatched(err.toString());
+    }
+  }
+
+  /// Match a deferred install using an attribution campaign token from an iOS/App Store
+  /// provider callback. Pass either the raw 32-char token or the App Store campaign
+  /// value shaped as `wl_<token>`.
+  static Future<ResolvedLink> matchInstallAttributionToken(
+    String baseUrl,
+    String installAttributionToken, {
+    String provider = 'app-store-campaign-token',
+  }) async {
+    final uri = Uri.parse(
+        '${_trimTrailingSlash(baseUrl)}/api/v1/match/install-attribution');
+    try {
+      final res = await _httpClient.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'installAttributionToken': installAttributionToken,
+          'provider': provider,
+        }),
+      );
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      final matched = body['matched'] == true;
+      return matched
+          ? ResolvedLink.fromJson(body)
+          : ResolvedLink.notMatched(body['error'] as String?);
     } catch (err) {
       return ResolvedLink.notMatched(err.toString());
     }
@@ -155,7 +223,12 @@ class WildlinksSdk {
     String? title,
     Map<String, dynamic>? deepLinkPayload,
     Map<String, String>? utm,
+    Map<String, dynamic>? marketing,
+    Map<String, dynamic>? leadCapture,
+    List<Map<String, dynamic>>? retargetingPixels,
+    Map<String, dynamic>? ctaOverlay,
     String? password,
+    String? startsAt,
     String? expiresAt,
     int? maxClicks,
     List<String>? tags,
@@ -163,7 +236,8 @@ class WildlinksSdk {
   }) async {
     final cfg = _requireConfig();
     if (cfg.apiKey == null || cfg.apiKey!.isEmpty) {
-      throw StateError('API key is required to create links. Pass apiKey to WildlinksConfig.');
+      throw StateError(
+          'API key is required to create links. Pass apiKey to WildlinksConfig.');
     }
 
     final uri = Uri.parse('${_trimTrailingSlash(cfg.baseUrl)}/api/v1/links');
@@ -176,7 +250,12 @@ class WildlinksSdk {
       if (title != null) 'title': title,
       if (deepLinkPayload != null) 'deepLinkPayload': deepLinkPayload,
       if (utm != null) 'utm': utm,
+      if (marketing != null) 'marketing': marketing,
+      if (leadCapture != null) 'leadCapture': leadCapture,
+      if (retargetingPixels != null) 'retargetingPixels': retargetingPixels,
+      if (ctaOverlay != null) 'ctaOverlay': ctaOverlay,
       if (password != null) 'password': password,
+      if (startsAt != null) 'startsAt': startsAt,
       if (expiresAt != null) 'expiresAt': expiresAt,
       if (maxClicks != null) 'maxClicks': maxClicks,
       if (tags != null) 'tags': tags,
@@ -194,14 +273,19 @@ class WildlinksSdk {
 
     final responseBody = jsonDecode(res.body) as Map<String, dynamic>;
     if (res.statusCode != 201) {
-      final error = responseBody['error'] as String? ?? 'Failed to create link (${res.statusCode})';
+      final error = responseBody['error'] as String? ??
+          'Failed to create link (${res.statusCode})';
       throw Exception(error);
     }
     return LinkModel.fromJson(responseBody);
   }
 
   /// Create a smart deep link and return the generated short URL.
-  static Future<String> createShortLink(String defaultUrl, {String? domainId, String? appProfileId, String? pathPrefix, String? slug}) async {
+  static Future<String> createShortLink(String defaultUrl,
+      {String? domainId,
+      String? appProfileId,
+      String? pathPrefix,
+      String? slug}) async {
     final result = await createLink(
       defaultUrl: defaultUrl,
       domainId: domainId,
@@ -237,5 +321,53 @@ class WildlinksSdk {
     );
   }
 
-  static String _trimTrailingSlash(String url) => url.endsWith('/') ? url.substring(0, url.length - 1) : url;
+  /// Track a custom conversion or lifecycle event for analytics and webhooks.
+  /// Requires an API key with the `events:write` scope.
+  static Future<TrackEventResult> trackEvent({
+    required String name,
+    String? linkId,
+    String? visitorId,
+    num? value,
+    String? currency,
+    Map<String, dynamic>? metadata,
+    DateTime? occurredAt,
+  }) async {
+    final cfg = _requireConfig();
+    if (cfg.apiKey == null || cfg.apiKey!.isEmpty) {
+      throw StateError(
+          'API key is required to track events. Pass apiKey to WildlinksConfig.');
+    }
+
+    final uri = Uri.parse('${_trimTrailingSlash(cfg.baseUrl)}/api/v1/events');
+    final body = {
+      'name': name,
+      if (linkId != null) 'linkId': linkId,
+      if (visitorId != null) 'visitorId': visitorId,
+      if (value != null) 'value': value,
+      if (currency != null) 'currency': currency,
+      if (metadata != null) 'metadata': metadata,
+      if (occurredAt != null)
+        'occurredAt': occurredAt.toUtc().toIso8601String(),
+    };
+
+    final res = await _httpClient.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'ApiKey ${cfg.apiKey}',
+      },
+      body: jsonEncode(body),
+    );
+
+    final responseBody = jsonDecode(res.body) as Map<String, dynamic>;
+    if (res.statusCode != 201) {
+      final error = responseBody['error'] as String? ??
+          'Failed to track event (${res.statusCode})';
+      throw Exception(error);
+    }
+    return TrackEventResult.fromJson(responseBody);
+  }
+
+  static String _trimTrailingSlash(String url) =>
+      url.endsWith('/') ? url.substring(0, url.length - 1) : url;
 }

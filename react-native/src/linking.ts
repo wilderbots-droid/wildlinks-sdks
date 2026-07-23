@@ -6,11 +6,59 @@ export interface UTMParams {
   content?: string;
 }
 
+export interface MarketingParams {
+  referralCode?: string;
+  affiliateId?: string;
+  couponCode?: string;
+  promoCode?: string;
+  appendToDestination?: boolean;
+}
+
+export interface LeadCaptureConfig {
+  enabled?: boolean;
+  title?: string;
+  description?: string;
+  fields?: { name?: boolean; email?: boolean; phone?: boolean; company?: boolean };
+  requireConsent?: boolean;
+  consentText?: string;
+  submitButtonLabel?: string;
+}
+
+export interface RetargetingPixel {
+  provider: 'meta' | 'google' | 'custom';
+  pixelId?: string;
+  eventName?: string;
+  imageUrl?: string;
+  isActive?: boolean;
+}
+
+export interface CtaOverlayConfig {
+  enabled?: boolean;
+  position?: 'top' | 'bottom';
+  title?: string;
+  message?: string;
+  buttonLabel?: string;
+  buttonUrl?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  buttonColor?: string;
+  dismissible?: boolean;
+}
+
 export interface RoutingRuleInput {
   priority: number;
   conditions: {
     platform?: ('ios' | 'android' | 'desktop' | 'other')[];
+    deviceTypes?: string[];
+    browsers?: string[];
+    deviceVendors?: string[];
+    deviceModels?: string[];
     countries?: string[];
+    regions?: string[];
+    cities?: string[];
+    languages?: string[];
+    minOsVersion?: string;
+    maxOsVersion?: string;
     startTime?: string;
     endTime?: string;
     daysOfWeek?: number[];
@@ -28,7 +76,12 @@ export interface CreateLinkInput {
   rules?: RoutingRuleInput[];
   deepLinkPayload?: Record<string, unknown>;
   utm?: UTMParams;
+  marketing?: MarketingParams;
+  leadCapture?: LeadCaptureConfig;
+  retargetingPixels?: RetargetingPixel[];
+  ctaOverlay?: CtaOverlayConfig;
   password?: string;
+  startsAt?: string;
   expiresAt?: string;
   maxClicks?: number;
   tags?: string[];
@@ -43,6 +96,29 @@ export interface LinkResponse {
   shortUrl: string;
   clickCount: number;
   isActive: boolean;
+  marketing?: MarketingParams;
+  leadCapture?: LeadCaptureConfig;
+  retargetingPixels?: RetargetingPixel[];
+  ctaOverlay?: CtaOverlayConfig;
+  startsAt?: string | null;
+  expiresAt?: string | null;
+}
+
+export interface TrackEventInput {
+  name: string;
+  linkId?: string;
+  visitorId?: string;
+  value?: number;
+  currency?: string;
+  metadata?: Record<string, unknown>;
+  occurredAt?: string;
+}
+
+export interface TrackEventResponse {
+  id: string;
+  name: string;
+  linkId?: string;
+  occurredAt: string;
 }
 
 export interface WildlinksConfig {
@@ -53,9 +129,12 @@ export interface WildlinksConfig {
 
 export interface ResolvedLink {
   matched: boolean;
+  installId?: string;
+  openId?: string;
   title?: string;
   destinationUrl?: string;
   deepLinkPayload?: Record<string, unknown>;
+  installAttributionProvider?: string | null;
   error?: string;
 }
 
@@ -113,6 +192,16 @@ function getPlatform(): 'ios' | 'android' | 'other' {
   }
 }
 
+function getOsVersion(): string | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { Platform } = require('react-native');
+    return Platform.Version != null ? String(Platform.Version) : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Call this with any URL your app receives via a Universal Link (iOS) or App Link (Android) -
  * typically from `Linking.addEventListener('url', ...)` or `Linking.getInitialURL()` on cold
@@ -131,6 +220,12 @@ export async function handleIncomingUrl(url: string): Promise<ResolvedLink> {
     return { matched: false, error: 'Not a valid URL' };
   }
 
+  const deferredToken = parsed.searchParams.get('dl_match_token');
+  if (deferredToken && /^[a-f0-9]{32}$/.test(deferredToken)) {
+    const deferredMatch = await matchDeferredToken(cfg.baseUrl, deferredToken);
+    if (deferredMatch.matched) return deferredMatch;
+  }
+
   if (!cfg.domains.includes(parsed.hostname)) {
     return { matched: false };
   }
@@ -142,6 +237,10 @@ export async function handleIncomingUrl(url: string): Promise<ResolvedLink> {
 
   const platform = getPlatform();
   const query = new URLSearchParams({ domain: parsed.hostname, slug, platform });
+  const osVersion = getOsVersion();
+  if (osVersion) query.set('osVersion', osVersion);
+  const language = parsed.searchParams.get('language') || parsed.searchParams.get('lang');
+  if (language) query.set('language', language);
   if (pathPrefix) query.set('pathPrefix', pathPrefix);
   const password = parsed.searchParams.get('pw');
   if (password) query.set('password', password);
@@ -202,6 +301,29 @@ export async function matchDeferredToken(baseUrl: string, matchToken: string): P
   }
 }
 
+/**
+ * Match a deferred install using an attribution campaign token from an iOS/App Store
+ * provider callback. Pass either the raw 32-char token or the App Store campaign
+ * value shaped as `wl_<token>`.
+ */
+export async function matchInstallAttributionToken(
+  baseUrl: string,
+  installAttributionToken: string,
+  provider = 'app-store-campaign-token'
+): Promise<ResolvedLink> {
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/$/, '')}/api/v1/match/install-attribution`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ installAttributionToken, provider }),
+    });
+    const body = await res.json();
+    return { matched: !!body.matched, ...body };
+  } catch (err) {
+    return { matched: false, error: err instanceof Error ? err.message : 'Network error' };
+  }
+}
+
 export async function createLink(input: CreateLinkInput): Promise<LinkResponse> {
   return apiRequest<LinkResponse>('/api/v1/links', input);
 }
@@ -222,4 +344,8 @@ export async function createShortLink(input: {
 
 export async function createDeepLink(input: CreateLinkInput): Promise<LinkResponse> {
   return createLink(input);
+}
+
+export async function trackEvent(input: TrackEventInput): Promise<TrackEventResponse> {
+  return apiRequest<TrackEventResponse>('/api/v1/events', input);
 }

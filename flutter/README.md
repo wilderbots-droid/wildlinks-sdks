@@ -76,6 +76,7 @@ class _MyAppState extends State<MyApp> {
 
       // Works for every matched link, even when no app payload was attached.
       print('Destination URL: ${resolved.destinationUrl}');
+      print('Open ID: ${resolved.openId}');
 
       // Optional app-specific routing metadata, only present if you created
       // the link with deepLinkPayload.
@@ -148,3 +149,20 @@ Future<void> createAndShareLink() async {
 Use `pathPrefix` when the app should create links under a specific namespace like
 `https://link.valueshift.in/x4I9/launch-offer`. The backend resolves the matching
 app profile from that prefix on the selected domain.
+
+## App Store install attribution
+
+For iOS App Store fallback, WilderLinks appends `ct=wl_<token>` to App Store URLs.
+If your attribution provider or custom first-launch flow returns that campaign
+token, exchange it for the original deferred payload:
+
+```dart
+final result = await WildlinksSdk.matchInstallAttributionToken(
+  'https://apilink.wilderbots.com',
+  'wl_<token-from-provider>',
+  provider: 'app-store-campaign-token',
+);
+```
+
+Matched app opens are recorded in WilderLinks analytics. When the backend creates
+an open record, `ResolvedLink.openId` is populated.
